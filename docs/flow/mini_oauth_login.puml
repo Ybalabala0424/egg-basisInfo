@@ -1,0 +1,33 @@
+@startuml
+title
+    小程序Oauth授权流程
+end title
+actor user
+participant user
+participant 第三方小程序 as mini
+participant 授权小程序插件 as oauth_mini
+participant 业务后台 as backend
+participant 汕大开放平台 as open
+
+user -> mini: 点击授权登录
+mini -> backend: 查询认证配置
+backend -> mini: 认证需要使用到的配置（redirect_url,client_id,scope,state)
+mini -> oauth_mini:  传入认证参数（client_id,scope,state）
+oauth_mini -> user: 登录页面
+user -> oauth_mini: 输入账号密码
+oauth_mini -> open: 登录，验证账号密码
+open -> oauth_mini: 登录成功
+oauth_mini -> user: 授权页面
+user -> oauth_mini: 同意授权
+oauth_mini -> open: 请求授权
+open -> oauth_mini: 授权码code
+oauth_mini -> mini: 将code传出，并退出小程序插件
+mini -> backend: 使用redirect_url，并传入code和state
+backend -> backend: 校验state合法性
+backend -> open: code换取token
+open -> backend: token，用户信息
+backend -> backend: 生成登录态
+backend -> mini: 登录态
+mini -> user: 授权成功
+
+@enduml

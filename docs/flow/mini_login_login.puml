@@ -1,0 +1,22 @@
+@startuml
+
+title
+    小程序微信登录
+end title
+actor user
+participant user
+participant 小程序 as mini
+participant 业务后台 as backend
+
+user -> mini: 微信登录
+mini -> backend: 登录请求
+backend -> backend: 检查微信是否绑定了校园网账号
+alt 绑定了校园网账号
+backend -> mini: 登陆成功
+mini -> user: 登陆成功
+else 无绑定校园网账号账号
+backend -> mini: 无绑定微信账号
+mini -> user: 该微信没有绑定微信账号，请使用校园网登录
+end
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml
+title
+    小程序绑定微信
+end title
+actor user
+participant user
+participant 小程序 as mini
+participant 业务后台 as backend
+participant 微信开放平台 as wechat_open
+
+user -> mini: 点击绑定微信
+mini -> mini: wx.login & wx.getUserInfo
+mini -> backend: 绑定请求
+backend -> wechat_open: 小程序登录凭证校验
+wechat_open -> backend: openid
+backend -> backend: 绑定微信
+backend -> backend: 解密并保存微信用户信息
+backend -> mini: 绑定成功
+mini -> user: 绑定成功
+
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+title
+    用户注销登录
+end title
+actor user
+participant user
+participant "APP/miniPro" as app
+participant "resource server" as resource
+database db
+participant db
+
+user -> app: 注销登录
+app -> resource: 发送注销请求
+resource -> db: 删除对应的课程表user_id
+resource -> app: 远端注销成功
+app -> app: 删除本地refresh_key
+app -> user: 注销成功
+
+
+
+@enduml
+

@@ -1,0 +1,26 @@
+@startuml
+title
+    用户关注/取消关注事件
+end title
+actor user
+participant user
+participant 公众号
+participant "syllabus server" as syllabus
+participant wechat
+database db
+participant db
+
+user -> 公众号: 关注公众号
+公众号 -> syllabus: 关注事件
+syllabus -> wechat: 获取用户微信信息
+wechat -> syllabus: 用户信息、unionid
+syllabus -> db: 插入/更新用户信息，unionid
+
+newpage
+
+user -> 公众号: 取消关注公众号
+公众号 -> syllabus: 取消关注事件
+syllabus -> db: 删除对应的openid
+
+@enduml
+

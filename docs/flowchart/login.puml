@@ -1,0 +1,51 @@
+@startuml
+title
+    APP/小程序登录授权流程
+end title
+actor user
+participant user
+participant "APP/miniPro" as app
+participant "oauth miniPro" as oauth
+participant "syllabus server" as syllabus
+database "syllabus db" as syllabus_db
+participant syllabus_db
+participant "resource server" as resource
+
+user -> app: 点击授权登录
+app -> oauth: 跳转到授权小程序
+    note left
+        跳转到小程序,是因为
+        需要获取到unionid，
+        用于关联小程序和公众号
+    end note
+oauth -> oauth: 检查授权是否过期
+alt refresh_key有效
+    oauth -> syllabus: 刷新skey，refresh_key
+    syllabus -> oauth: skey，refresh_key
+else refresh_key过期或不存在
+    user -> oauth: 输入校园网账号密码
+    oauth -> resource: 验证用户账号密码
+    resource -> oauth: 账号密码正确
+    note left
+        返回session
+    end note
+    oauth -> user: 授权页面
+    user -> oauth: 用户授权
+    oauth -> resource: 授权
+    resource -> oauth: 授权成功，重定向，并在重定向的url带上code
+    oauth -> syllabus: 重定向，带上code
+    oauth -> syllabus: 用户加密信息、code
+    syllabus -> resource: Oauth认证，code换accessToken
+    resource -> syllabus: accessToken，用户信息
+    syllabus -> syllabus_db: 存储token，用户信息
+    syllabus -> oauth: 课程表授权成功
+    oauth -> syllabus: 小程序微信登录
+    syllabus -> syllabus: 解密微信用户信息
+    syllabus -> syllabus_db: 用户信息、unionid、openid
+    syllabus -> syllabus: 生成skey，refresh_key
+    syllabus -> syllabus_db: 存储skey，refresh_key
+    syllabus -> oauth: 授权成功，返回skey，refresh_key
+end
+
+    oauth -> app: 携带skey，refresh_key返回
+@enduml

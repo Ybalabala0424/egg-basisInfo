@@ -1,0 +1,43 @@
+@startuml
+title
+    业务后台如何维护一套登录态
+end title
+actor user
+participant user
+participant "APP/miniPro" as app
+participant "syllabus server" as syllabus
+database db
+participant db
+
+user -> app: 请求操作
+    app -> app: 检查skey
+alt 不存在skey或者skey过期
+    app -> app: 检查refresh_key
+    alt 不存在refresh_key
+        app -> user: 需要重新登录授权
+    end
+    app -> syllabus: refresh_key 换取 skey
+    syllabus -> syllabus: 检查refresh_key有效性
+    alt refresh_key无效
+        syllabus -> app: refresh_key无效
+        app -> user: 需要重新登录授权
+    end
+    syllabus -> app: skey
+    app -> app: 缓存skey，refresh_key
+end
+
+app -> syllabus: skey,请求信息
+syllabus -> syllabus: 检查skey是否过期
+alt skey过期:
+    syllabus -> app: skey过期，请重新获取
+    app -> syllabus: user_id account 换取 skey
+    syllabus -> db: 更新skey，refresh_key
+    syllabus -> app: skey，refresh_key
+    app -> syllabus: 重新请求，skey,请求信息
+end
+syllabus -> db: skey换取用户信息
+db -> syllabus: 用户信息
+syllabus -> syllabus: 请求业务
+syllabus -> app: 返回
+
+@enduml
