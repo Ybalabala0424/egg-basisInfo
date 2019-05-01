@@ -11,8 +11,6 @@ class UpdateCache extends Subscription {
     }
 
     async subscribe() {
-        // todo error输出
-        // todo 已完成 setUniformInfo命名
         try {
             await this.service.timeInfoOperation.setTimeInfo()
         } catch (err) {
